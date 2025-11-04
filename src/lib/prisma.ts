@@ -32,9 +32,10 @@ function getDatabaseUrl(): string {
 	return dbUrl;
 }
 
-// Update DATABASE_URL di environment jika perlu (untuk file-based atau postgres://)
+// Update DATABASE_URL di environment jika perlu
 const resolvedDbUrl = getDatabaseUrl();
-if (resolvedDbUrl !== process.env.DATABASE_URL && (resolvedDbUrl.startsWith("file:") || process.env.DATABASE_URL?.startsWith("postgres://"))) {
+// Set DATABASE_URL untuk Prisma Client (Prisma membaca dari DATABASE_URL, bukan PRISMA_DATABASE_URL)
+if (resolvedDbUrl && !resolvedDbUrl.startsWith("file:")) {
 	process.env.DATABASE_URL = resolvedDbUrl;
 }
 
