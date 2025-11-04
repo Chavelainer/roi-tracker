@@ -34,8 +34,10 @@ if (resolvedDbUrl !== process.env.DATABASE_URL && (resolvedDbUrl.startsWith("fil
 }
 
 // Prisma Client dengan logging untuk debugging
-const prismaClientOptions = {
-	log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+const prismaClientOptions: {
+	log?: Array<"query" | "info" | "warn" | "error">;
+} = {
+	log: process.env.NODE_ENV === "development" ? (["query", "error", "warn"] as const) : (["error"] as const),
 };
 
 export const prisma: PrismaClient = global.prismaGlobal ?? new PrismaClient(prismaClientOptions);
