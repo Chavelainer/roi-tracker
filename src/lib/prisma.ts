@@ -18,12 +18,13 @@ function getDatabaseUrl(): string {
 		return `file:${absolutePath}`;
 	}
 	
+	// Untuk Turso/libsql, return as-is
 	return dbUrl;
 }
 
-// Update DATABASE_URL di environment jika perlu
+// Update DATABASE_URL di environment jika perlu (hanya untuk file-based)
 const resolvedDbUrl = getDatabaseUrl();
-if (resolvedDbUrl !== process.env.DATABASE_URL) {
+if (resolvedDbUrl !== process.env.DATABASE_URL && resolvedDbUrl.startsWith("file:")) {
 	process.env.DATABASE_URL = resolvedDbUrl;
 }
 
