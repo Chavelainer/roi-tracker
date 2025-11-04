@@ -18,17 +18,27 @@ function getDatabaseUrl(): string {
 		return `file:${absolutePath}`;
 	}
 	
-	// Untuk Turso/libsql, return as-is
+	// Untuk PostgreSQL, pastikan format benar
+	if (dbUrl.startsWith("postgres://")) {
+		return dbUrl.replace("postgres://", "postgresql://");
+	}
+	
+	// Untuk Turso/libsql atau postgresql, return as-is
 	return dbUrl;
 }
 
-// Update DATABASE_URL di environment jika perlu (hanya untuk file-based)
+// Update DATABASE_URL di environment jika perlu (untuk file-based atau postgres://)
 const resolvedDbUrl = getDatabaseUrl();
-if (resolvedDbUrl !== process.env.DATABASE_URL && resolvedDbUrl.startsWith("file:")) {
+if (resolvedDbUrl !== process.env.DATABASE_URL && (resolvedDbUrl.startsWith("file:") || process.env.DATABASE_URL?.startsWith("postgres://"))) {
 	process.env.DATABASE_URL = resolvedDbUrl;
 }
 
-export const prisma: PrismaClient = global.prismaGlobal ?? new PrismaClient();
+// Prisma Client dengan logging untuk debugging
+const prismaClientOptions = {
+	log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+};
+
+export const prisma: PrismaClient = global.prismaGlobal ?? new PrismaClient(prismaClientOptions);
 
 if (process.env.NODE_ENV !== "production") {
 	global.prismaGlobal = prisma;
