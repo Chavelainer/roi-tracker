@@ -8,6 +8,11 @@ declare global {
 
 // Fix DATABASE_URL untuk path relatif di Windows/Next.js
 function getDatabaseUrl(): string {
+	// Prioritaskan PRISMA_DATABASE_URL jika ada (Prisma Accelerate untuk serverless)
+	if (process.env.PRISMA_DATABASE_URL) {
+		return process.env.PRISMA_DATABASE_URL;
+	}
+	
 	const dbUrl = process.env.DATABASE_URL || "";
 	
 	// Jika path relatif (file:./prisma/dev.db), convert ke absolut
