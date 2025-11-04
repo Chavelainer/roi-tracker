@@ -50,3 +50,8 @@ prisma/dev.db*
 # database files
 *.db
 *.db-journal
+
+# credentials (never commit)
+WHOP_CREDENTIALS.md
+.env.local
+.env.production
