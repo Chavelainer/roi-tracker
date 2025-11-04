@@ -1,0 +1,15 @@
+// Alternative schema untuk Turso (SQLite Cloud)
+// Copy isi ini ke schema.prisma jika menggunakan Turso
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "libsql"
+  url      = env("DATABASE_URL")
+}
+
+// ... (rest of schema sama seperti schema.prisma)
+

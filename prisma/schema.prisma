@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ChannelType {
+  INSTAGRAM
+  YOUTUBE
+  TIKTOK
+  X
+  EMAIL
+  DISCORD
+  BLOG
+  OTHER
+}
+
+enum EventType {
+  CLICK
+  SIGNUP
+  PURCHASE
+}
+
+enum CostSource {
+  MANUAL
+  INTEGRATION
+}
+
+model Campaign {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  objective   String?
+  startDate   DateTime?
+  endDate     DateTime?
+  budgetCents Int?       // use cents for accuracy
+
+  utmLinks    UTMLink[]
+  events      Event[]
+  costs       Cost[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Channel {
+  id        String      @id @default(cuid())
+  name      String      @unique
+  type      ChannelType
+
+  utmLinks  UTMLink[]
+  costs     Cost[]
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model UTMLink {
+  id            String    @id @default(cuid())
+  baseUrl       String
+  utmSource     String
+  utmMedium     String
+  utmCampaign   String
+  utmContent    String?
+  utmTerm       String?
+  fullUrl       String    @unique
+
+  campaignId    String
+  campaign      Campaign  @relation(fields: [campaignId], references: [id])
+
+  channelId     String
+  channel       Channel   @relation(fields: [channelId], references: [id])
+
+  events        Event[]
+
+  createdAt     DateTime  @default(now())
+}
+
+model Event {
+  id           String     @id @default(cuid())
+  type         EventType
+  occurredAt   DateTime   @default(now())
+  valueCents   Int?       // for PURCHASE events
+  customerId   String?
+  metadata     Json?
+
+  utmLinkId    String
+  utmLink      UTMLink    @relation(fields: [utmLinkId], references: [id])
+
+  campaignId   String
+  campaign     Campaign   @relation(fields: [campaignId], references: [id])
+
+  conversion   Conversion?
+}
+
+model Cost {
+  id           String      @id @default(cuid())
+  campaignId   String
+  campaign     Campaign    @relation(fields: [campaignId], references: [id])
+
+  channelId    String
+  channel      Channel     @relation(fields: [channelId], references: [id])
+
+  amountCents  Int
+  source       CostSource  @default(MANUAL)
+  note         String?
+  incurredOn   DateTime    @default(now())
+
+  createdAt    DateTime    @default(now())
+}
+
+model Conversion {
+  id         String   @id @default(cuid())
+  eventId    String   @unique
+  event      Event    @relation(fields: [eventId], references: [id])
+
+  // denormalized for fast ROI queries
+  valueCents Int
+  occurredAt DateTime @default(now())
+}
