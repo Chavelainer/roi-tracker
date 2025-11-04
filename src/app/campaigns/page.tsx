@@ -4,7 +4,13 @@ import styles from "./campaigns.module.css";
 export const dynamic = 'force-dynamic';
 
 export default async function CampaignsPage() {
-  let campaigns = [];
+  let campaigns: Array<{
+    id: string;
+    name: string;
+    utmLinks: Array<{ id: string }>;
+    costs: Array<{ id: string }>;
+    events: Array<{ id: string }>;
+  }> = [];
   let dbError = false;
 
   try {
