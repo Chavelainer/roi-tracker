@@ -4,16 +4,24 @@ import styles from "./campaigns.module.css";
 export const dynamic = 'force-dynamic';
 
 export default async function CampaignsPage() {
-  const campaigns = await prisma.campaign.findMany({
-    include: {
-      utmLinks: true,
-      costs: true,
-      events: {
-        where: { type: "PURCHASE" },
+  let campaigns = [];
+  let dbError = false;
+
+  try {
+    campaigns = await prisma.campaign.findMany({
+      include: {
+        utmLinks: true,
+        costs: true,
+        events: {
+          where: { type: "PURCHASE" },
+        },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("Database error:", error);
+    dbError = true;
+  }
 
   return (
     <main className={styles.main}>
@@ -22,7 +30,15 @@ export default async function CampaignsPage() {
         <p className={styles.subtitle}>Manage and track your marketing campaigns</p>
       </div>
       <div className={styles.card}>
-        {campaigns.length === 0 ? (
+        {dbError ? (
+          <div className={styles.emptyState}>
+            <h3 style={{ color: "var(--error)", marginBottom: "1rem" }}>Database Connection Error</h3>
+            <p>Unable to connect to database. Please check your DATABASE_URL configuration.</p>
+            <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginTop: "1rem" }}>
+              See <code>URGENT_FIX.md</code> for setup instructions.
+            </p>
+          </div>
+        ) : campaigns.length === 0 ? (
           <div className={styles.emptyState}>
             <h3>No campaigns yet</h3>
             <p>Create your first campaign by saving a UTM link</p>
