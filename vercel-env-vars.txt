@@ -1,0 +1,12 @@
+# Environment Variables untuk Vercel
+# Copy-paste ini ke Vercel Dashboard → Settings → Environment Variables
+
+DATABASE_URL=skip-dulu-akan-di-setup-setelah-deploy
+WHOP_API_KEY=8m2UlAZWl49NzV0b-hJ79DkRW2ai-B4e7t1EPYcJI9k
+NEXT_PUBLIC_WHOP_APP_ID=app_QsNqPoaQ3i1PBH
+NEXT_PUBLIC_WHOP_AGENT_USER_ID=user_jixSk8v0rzS3M
+NEXT_PUBLIC_WHOP_COMPANY_ID=biz_dMR0pdzvbfxmoG
+NODE_ENV=production
+
+# PENTING: Set semua untuk Production, Preview, dan Development!
+

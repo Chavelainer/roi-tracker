@@ -55,3 +55,5 @@ prisma/dev.db*
 WHOP_CREDENTIALS.md
 .env.local
 .env.production
+
+.vercel
